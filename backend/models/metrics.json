@@ -1,0 +1,101 @@
+{
+  "best_model": "xgboost",
+  "feature_names": [
+    "hour",
+    "day_of_week",
+    "month",
+    "is_weekend",
+    "latitude",
+    "longitude",
+    "call_type",
+    "severity_level",
+    "available_ambulances",
+    "hospitals_nearby",
+    "weather_condition",
+    "temperature",
+    "wind_speed",
+    "traffic_level",
+    "distance_to_hospital",
+    "population_density",
+    "ambulance_type",
+    "is_peak_hours",
+    "is_night",
+    "severity_traffic",
+    "distance_traffic",
+    "distance_bin",
+    "high_density",
+    "ambulance_availability_ratio",
+    "weather_severity",
+    "resource_constraints"
+  ],
+  "models": {
+    "xgboost": {
+      "accuracy": 0.904,
+      "precision": 0.6990291262135923,
+      "recall": 0.5255474452554745,
+      "f1": 0.6,
+      "roc_auc": 0.924985832818804,
+      "confusion_matrix": [
+        [
+          832,
+          31
+        ],
+        [
+          65,
+          72
+        ]
+      ]
+    },
+    "random_forest": {
+      "accuracy": 0.906,
+      "precision": 0.7721518987341772,
+      "recall": 0.44525547445255476,
+      "f1": 0.5648148148148148,
+      "roc_auc": 0.9163459667938189,
+      "confusion_matrix": [
+        [
+          845,
+          18
+        ],
+        [
+          76,
+          61
+        ]
+      ]
+    },
+    "gradient_boost": {
+      "accuracy": 0.9,
+      "precision": 0.6947368421052632,
+      "recall": 0.48175182481751827,
+      "f1": 0.5689655172413793,
+      "roc_auc": 0.9216449154621037,
+      "confusion_matrix": [
+        [
+          834,
+          29
+        ],
+        [
+          71,
+          66
+        ]
+      ]
+    },
+    "lightgbm": {
+      "accuracy": 0.912,
+      "precision": 0.7425742574257426,
+      "recall": 0.5474452554744526,
+      "f1": 0.6302521008403361,
+      "roc_auc": 0.9225752975108052,
+      "confusion_matrix": [
+        [
+          837,
+          26
+        ],
+        [
+          62,
+          75
+        ]
+      ]
+    }
+  }
+}

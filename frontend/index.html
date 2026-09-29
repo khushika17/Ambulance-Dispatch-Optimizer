@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ambulance Dispatch Optimizer</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <span class="brand-mark">+</span>
+            <div>
+                <h1>Ambulance Dispatch Optimizer</h1>
+                <p class="brand-tagline">ML-driven emergency response decision support</p>
+            </div>
+        </div>
+        <nav class="nav">
+            <a href="#predict" class="nav-link active" data-tab="predict">Predict</a>
+            <a href="#insights" class="nav-link" data-tab="insights">Model Insights</a>
+            <a href="#train" class="nav-link" data-tab="train">Retrain</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- PREDICT VIEW -->
+        <section id="predict" class="view view-active">
+            <div class="grid">
+                <div class="card form-card">
+                    <h2>Emergency Call Inputs</h2>
+                    <p class="card-sub">Enter the call details. The model predicts whether the dispatch will achieve a sub-8-minute response.</p>
+
+                    <form id="predict-form" class="form">
+                        <fieldset>
+                            <legend>Time</legend>
+                            <div class="field">
+                                <label for="hour">Hour (0-23)</label>
+                                <input type="number" id="hour" name="hour" min="0" max="23" value="14" required />
+                            </div>
+                            <div class="field">
+                                <label for="day_of_week">Day of week (0=Mon)</label>
+                                <input type="number" id="day_of_week" name="day_of_week" min="0" max="6" value="2" required />
+                            </div>
+                            <div class="field">
+                                <label for="month">Month</label>
+                                <input type="number" id="month" name="month" min="1" max="12" value="5" required />
+                            </div>
+                            <div class="field">
+                                <label for="is_weekend">Weekend?</label>
+                                <select id="is_weekend" name="is_weekend">
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Location</legend>
+                            <div class="field">
+                                <label for="latitude">Latitude</label>
+                                <input type="number" step="0.0001" id="latitude" name="latitude" value="40.7" required />
+                            </div>
+                            <div class="field">
+                                <label for="longitude">Longitude</label>
+                                <input type="number" step="0.0001" id="longitude" name="longitude" value="-73.9" required />
+                            </div>
+                            <div class="field">
+                                <label for="distance_to_hospital">Distance to hospital (km)</label>
+                                <input type="number" step="0.1" id="distance_to_hospital" name="distance_to_hospital" value="3.5" required />
+                            </div>
+                            <div class="field">
+                                <label for="population_density">Population density (per km²)</label>
+                                <input type="number" id="population_density" name="population_density" value="3000" required />
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Call</legend>
+                            <div class="field">
+                                <label for="call_type">Call type</label>
+                                <select id="call_type" name="call_type">
+                                    <option>Medical</option>
+                                    <option>Trauma</option>
+                                    <option selected>Cardiac</option>
+                                    <option>Respiratory</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="severity_level">Severity (1-5)</label>
+                                <input type="number" id="severity_level" name="severity_level" min="1" max="5" value="4" required />
+                            </div>
+                            <div class="field">
+                                <label for="ambulance_type">Ambulance type</label>
+                                <select id="ambulance_type" name="ambulance_type">
+                                    <option>Basic</option>
+                                    <option selected>Advanced</option>
+                                    <option>Cardiac</option>
+                                </select>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Resources</legend>
+                            <div class="field">
+                                <label for="available_ambulances">Available ambulances</label>
+                                <input type="number" id="available_ambulances" name="available_ambulances" min="0" value="5" required />
+                            </div>
+                            <div class="field">
+                                <label for="hospitals_nearby">Hospitals nearby</label>
+                                <input type="number" id="hospitals_nearby" name="hospitals_nearby" min="0" value="3" required />
+                            </div>
+                            <div class="field">
+                                <label for="traffic_level">Traffic level (0-5)</label>
+                                <input type="number" id="traffic_level" name="traffic_level" min="0" max="5" value="3" required />
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Weather</legend>
+                            <div class="field">
+                                <label for="weather_condition">Condition</label>
+                                <select id="weather_condition" name="weather_condition">
+                                    <option selected>Clear</option>
+                                    <option>Rainy</option>
+                                    <option>Foggy</option>
+                                    <option>Snowy</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="temperature">Temperature (°C)</label>
+                                <input type="number" step="0.1" id="temperature" name="temperature" value="22" required />
+                            </div>
+                            <div class="field">
+                                <label for="wind_speed">Wind speed (km/h)</label>
+                                <input type="number" step="0.1" id="wind_speed" name="wind_speed" value="15" required />
+                            </div>
+                        </fieldset>
+
+                        <div class="actions">
+                            <button type="submit" class="btn btn-primary">Run Prediction</button>
+                            <button type="button" id="reset-btn" class="btn btn-ghost">Reset</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card result-card">
+                    <h2>Dispatch Decision</h2>
+                    <div id="result-empty" class="empty-state">
+                        <p>Fill in the form and run a prediction to see results.</p>
+                    </div>
+
+                    <div id="result" hidden>
+                        <div class="verdict" id="verdict">
+                            <div class="verdict-badge" id="verdict-badge">--</div>
+                            <div class="verdict-text">
+                                <h3 id="verdict-title">--</h3>
+                                <p id="verdict-sub">--</p>
+                            </div>
+                        </div>
+
+                        <div class="metrics">
+                            <div class="metric">
+                                <span class="metric-label">Confidence</span>
+                                <span class="metric-value" id="confidence">--</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">P(optimal)</span>
+                                <span class="metric-value" id="prob-optimal">--</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">P(suboptimal)</span>
+                                <span class="metric-value" id="prob-suboptimal">--</span>
+                            </div>
+                        </div>
+
+                        <div class="probability-bar">
+                            <div class="probability-fill" id="probability-fill"></div>
+                        </div>
+
+                        <h3 class="section-title">Optimization Tips</h3>
+                        <ul class="tips" id="tips"></ul>
+                    </div>
+
+                    <div id="result-error" class="error-state" hidden></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INSIGHTS VIEW -->
+        <section id="insights" class="view">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Model Performance</h2>
+                    <button id="refresh-insights" class="btn btn-ghost btn-sm">Refresh</button>
+                </div>
+                <div id="insights-content">
+                    <p class="empty-state">Loading insights...</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Visualizations</h2>
+                <div id="images-grid" class="image-grid">
+                    <p class="empty-state">Loading visualizations...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- RETRAIN VIEW -->
+        <section id="train" class="view">
+            <div class="card">
+                <h2>Retrain Model</h2>
+                <p>Generate fresh synthetic data and retrain the entire pipeline. This will overwrite the current model artifacts.</p>
+
+                <form id="retrain-form" class="form form-inline">
+                    <div class="field">
+                        <label for="n_samples">Number of samples</label>
+                        <input type="number" id="n_samples" name="n_samples" min="500" max="50000" step="500" value="5000" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="retrain-btn">Start Training</button>
+                </form>
+
+                <div id="retrain-status" class="status-block" hidden></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <span>Ambulance Dispatch Optimizer · ML Pipeline Demo</span>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
